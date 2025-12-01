@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'MAVEN_HOME'
+    }
+
+    stages {
+
+        stage('Git Checkout & Clean') {
+            steps {
+                // Delete old folder if exists
+                bat 'rmdir /s /q webapp || exit 0'
+
+                // Correct git clone command
+                bat 'git clone https://github.com/vedagna21/webapp.git'
+
+                // Clean Maven project
+                bat 'mvn clean -f webapp/pom.xml'
+            }
+        }
+
+        stage('Install') {
+            steps {
+                bat 'mvn install -f webapp/pom.xml'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'mvn test -f webapp/pom.xml'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                bat 'mvn package -f webapp/pom.xml'
+            }
+        }
+    }
+}
